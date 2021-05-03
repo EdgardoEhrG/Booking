@@ -9,10 +9,12 @@ const app = express();
 
 app.use(cors());
 app.use(morgan("dev"));
+app.use(express.json());
 
 const port = process.env.PORT || 8000;
 const database = process.env.DATABASE;
 
+// -------------------- Database
 mongoose
   .connect(database, {
     useNewUrlParser: true,
@@ -23,7 +25,7 @@ mongoose
   .then(() => console.log("DB connected"))
   .catch((err) => console.log(err));
 
-// Router Middleware
+// -------------------- Router Middleware
 readdirSync("./routes").map((route) =>
   app.use("/api", require(`./routes/${route}`))
 );
