@@ -19,8 +19,8 @@ const Login = ({ history }) => {
       let res = await login(currentUser);
       if (res.data) {
         console.log(res.data);
+        history.push("/");
       }
-      history.push("/");
     } catch (error) {
       console.log(error);
       if (error.response.status === 400) toast.error(error.response.data);
