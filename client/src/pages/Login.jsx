@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 
+import { useDispatch } from "react-redux";
 import { login } from "../store/actions/auth";
 
 import LoginForm from "../components/LoginForm/LoginForm";
 import { toast } from "react-toastify";
 
 const Login = ({ history }) => {
+  const dispatch = useDispatch();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,8 +21,12 @@ const Login = ({ history }) => {
       };
       let res = await login(currentUser);
       if (res.data) {
-        console.log(res.data);
-        history.push("/");
+        window.localStorage.setItem("auth", JSON.stringify(res.data));
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: res.data,
+        });
+        history.push("/dashboard");
       }
     } catch (error) {
       console.log(error);

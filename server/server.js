@@ -3,7 +3,7 @@ import { readdirSync } from "fs";
 import cors from "cors";
 import mongoose from "mongoose";
 const morgan = require("morgan");
-require("dotenv").config();
+require("dotenv").config({ path: "./.env.local" });
 
 const app = express();
 
