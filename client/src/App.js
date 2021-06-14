@@ -8,6 +8,8 @@ import Seller from "./pages/Seller";
 import Hotels from "./pages/Hotels/Hotels";
 import NewHotel from "./pages/Hotels/NewHotel";
 
+import StripeCallback from "./components/stripe/stripe-callback";
+
 import NavMenu from "./components/NavMenu/NavMenu";
 import { ToastContainer } from "react-toastify";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
@@ -31,6 +33,11 @@ const App = () => {
         <PrivateRoute exact path="/dashboard/seller" component={Seller} />
         <PrivateRoute exact path="/hotels" component={Hotels} />
         <PrivateRoute exact path="/hotels/new" component={NewHotel} />
+        <PrivateRoute
+          exact
+          path="/stripe/callback"
+          component={StripeCallback}
+        />
       </Switch>
     </Router>
   );
