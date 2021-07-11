@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useSelector } from "react-redux";
-import { createHotel } from "../../store/actions/hotel";
+import { getHotel, updateHotel } from "../../store/actions/hotel";
 
 import { toast } from "react-toastify";
 
 import HotelForm from "../../components/HotelForm/HotelForm";
 
-const NewHotel = () => {
+const EditHotel = ({ match }) => {
+  const { hotelId } = match.params;
+
   const { auth } = useSelector((state) => ({ ...state }));
   const { token } = auth;
 
@@ -27,6 +29,16 @@ const NewHotel = () => {
 
   const { title, content, price, from, to, bed } = values;
 
+  useEffect(() => {
+    loadSellerHotel();
+  }, []);
+
+  const loadSellerHotel = async () => {
+    let res = await getHotel(hotelId);
+    setValues(...values, ...res.data);
+    setPreview(`${process.env.REACT_APP_API}/hotel/image/${res.data._id}`);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let hotelData = new FormData();
@@ -40,10 +52,10 @@ const NewHotel = () => {
     hotelData.append("to", to);
 
     try {
-      let res = await createHotel(token, hotelData);
+      let res = await updateHotel(token, hotelData, hotelId);
 
       if (res.status === 200) {
-        toast("New hotel is added");
+        toast("The hotel is updated");
       }
     } catch (error) {
       toast.error(error.response.data);
@@ -68,12 +80,11 @@ const NewHotel = () => {
   return (
     <>
       <div className="container-fluid bg-secondary p-5 text-center">
-        <h2>Add Hotel</h2>
+        <h2>Edit Hotel</h2>
       </div>
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-10">
-            <br />
             <HotelForm
               values={values}
               setValues={setValues}
@@ -97,4 +108,4 @@ const NewHotel = () => {
   );
 };
 
-export default NewHotel;
+export default EditHotel;

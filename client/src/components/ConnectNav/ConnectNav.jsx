@@ -54,7 +54,7 @@ const ConnectNav = () => {
       {auth &&
         auth.user &&
         auth.user.stripe_seller &&
-        auth.user.stripe_seller.chatges_enabled && (
+        auth.user.stripe_seller.charges_enabled && (
           <>
             <Ribbon text="available" color="grey">
               <Card className="bg-light pt-1">

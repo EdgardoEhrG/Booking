@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { useSelector } from "react-redux";
 import { createConnectAccount } from "../store/actions/stripe";
+import { getSellerHotels, deleteHotel } from "../store/actions/hotel";
 
 import DashboardNav from "../components/DashboardNav/DashboardNav";
 import ConnectNav from "../components/ConnectNav/ConnectNav";
+import SmallCard from "../components/SmallCard/SmallCard";
 import { HomeOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const Seller = () => {
   const { auth } = useSelector((state) => ({ ...state }));
+  const [hotels, setHotels] = useState([]);
   const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadSellerHotels();
+  }, []);
+
+  const loadSellerHotels = async () => {
+    let { data } = await getSellerHotels(auth.token);
+    setHotels(data);
+  };
 
   const handleClick = async () => {
     setLoading(true);
@@ -26,6 +38,14 @@ const Seller = () => {
     }
   };
 
+  const handleHotelDelete = async (hotelId) => {
+    if (!window.confirm("Are u sure?")) return;
+    deleteHotel(auth.token, hotelId).then((res) => {
+      toast.success("Hotel deleted");
+      loadSellerHotels();
+    });
+  };
+
   const connected = () => {
     return (
       <div className="container-fluid">
@@ -38,6 +58,17 @@ const Seller = () => {
               + Add New
             </Link>
           </div>
+        </div>
+        <div className="row">
+          {hotels.map((hotel) => (
+            <SmallCard
+              key={hotel._id}
+              hotel={hotel}
+              showViewMoreButton={false}
+              owner={true}
+              handleHotelDelete={handleHotelDelete}
+            />
+          ))}
         </div>
       </div>
     );
