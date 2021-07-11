@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import queryString from "querystring";
 
 import User from "../models/user";
+import Hotel from "../models/hotel";
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -73,7 +74,7 @@ export const getAccountBalance = async (req, res) => {
   }
 };
 
-export const payoutSettings = async (req, res) => {
+export const getPayoutSettings = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).exec();
     const loginLink = await stripe.accounts.createLoginLink(
@@ -83,6 +84,46 @@ export const payoutSettings = async (req, res) => {
       }
     );
     res.json(loginLink);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSessionId = async (req, res) => {
+  try {
+    const { hotelId } = req.body;
+
+    const hotel = await Hotel.findById(hotelId).populate("postedBy").exec();
+
+    const fee = (hotel.price * 20) / 100;
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          name: hotel.title,
+          amount: hotel.price * 100,
+          currency: "usd",
+          quantity: 1,
+        },
+      ],
+      payment_intent_data: {
+        application_fee_amount: fee * 100,
+        transfer_data: {
+          destination: hotel.postedBy.stripe_account_id,
+        },
+      },
+      success_url: `${process.env.STRIPE_SUCCESS_URL}/${hotel._id}`,
+      cancel_url: process.env.STRIPE_CANCEL_URL,
+    });
+
+    await User.findByIdAndUpdate(req.user._id, {
+      stripeSession: session,
+    }).exec();
+
+    res.send({
+      sessionId: session.id,
+    });
   } catch (error) {
     console.log(error);
   }

@@ -13,6 +13,8 @@ import EditHotel from "./pages/Hotels/EditHotel";
 import ViewHotel from "./pages/Hotels/ViewHotel";
 
 import StripeCallback from "./components/stripe/stripe-callback";
+import StripeSuccess from "./components/stripe/stripe-success";
+import StripeCancel from "./components/stripe/stripe-cancel";
 
 import NavMenu from "./components/NavMenu/NavMenu";
 import { ToastContainer } from "react-toastify";
@@ -43,6 +45,12 @@ const App = () => {
           path="/stripe/callback"
           component={StripeCallback}
         />
+        <PrivateRoute
+          exact
+          path="/stripe/success/:hotelId"
+          component={StripeSuccess}
+        />
+        <PrivateRoute exact path="/stripe/cancel" component={StripeCancel} />
         <Route exact path="/hotel/:hotelId" component={ViewHotel} />
       </Switch>
     </Router>

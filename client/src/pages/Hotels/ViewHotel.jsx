@@ -5,6 +5,7 @@ import { getHotel, getDataDifference } from "../../store/actions/hotel";
 import { getSessionId } from "../../store/actions/stripe";
 
 import moment from "moment";
+import { loadStripe } from "@stripe/stripe-js";
 
 const ViewHotel = ({ match, history }) => {
   const { hotelId } = match.params;
@@ -12,6 +13,7 @@ const ViewHotel = ({ match, history }) => {
 
   const [hotel, setHotel] = useState({});
   const [image, setImage] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     loadSellerHotel();
@@ -25,8 +27,15 @@ const ViewHotel = ({ match, history }) => {
 
   const handleClick = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!auth) history.pushState("/login");
     let res = await getSessionId(auth.token, hotelId);
+    const stripe = await loadStripe(process.env.REACT_APP_STRIPE_KEY);
+    stripe
+      .redirectToCheckout({
+        sessionId: res.data.sessionId,
+      })
+      .then((result) => setLoading(false));
   };
 
   return (
@@ -65,8 +74,13 @@ const ViewHotel = ({ match, history }) => {
             <button
               onClick={handleClick}
               className="btn btn-block btn-lg btn-primary mt-3"
+              disabled={isLoading}
             >
-              {auth && auth.token ? "Book now" : "Login to book"}
+              {isLoading
+                ? "Loading..."
+                : auth && auth.token
+                ? "Book now"
+                : "Login to book"}
             </button>
           </div>
         </div>

@@ -6,7 +6,8 @@ import {
   createConnectAccount,
   getAccountStatus,
   getAccountBalance,
-  payoutSettings,
+  getPayoutSettings,
+  getSessionId,
 } from "../controllers/stripe";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const router = express.Router();
 router.post("/create-connect-account", requireSignin, createConnectAccount);
 router.post("/account-status", requireSignin, getAccountStatus);
 router.post("/account-balance", requireSignin, getAccountBalance);
-router.post("/payout-settings", requireSignin, payoutSettings);
+router.post("/payout-settings", requireSignin, getPayoutSettings);
+router.post("/stripe-session-id/:hotelId", requireSignin, getSessionId);
 
 module.exports = router;
