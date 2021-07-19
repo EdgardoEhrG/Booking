@@ -47,6 +47,25 @@ export const deleteHotel = async (token, hotelId) => {
   );
 };
 
+export const getUserHotelBookings = async (token) => {
+  return await axios.get(`${process.env.REACT_APP_API}/user-hotel-bookings`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const isAlreadyBooked = async (token, hotelId) => {
+  return await axios.get(
+    `${process.env.REACT_APP_API}/is-already-booked/${hotelId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
 export const getDataDifference = (from, to) => {
   const day = 24 * 60 * 60 * 1000;
   const startDate = new Date(from);

@@ -3,6 +3,7 @@ import queryString from "querystring";
 
 import User from "../models/user";
 import Hotel from "../models/hotel";
+import Order from "../models/order";
 
 const stripe = Stripe(process.env.STRIPE_SECRET);
 
@@ -50,6 +51,7 @@ export const getAccountStatus = async (req, res) => {
   const user = await User.findById(req.user._id).exec();
   const account = await stripe.accounts.retrieve(user.stripe_account_id);
   const updatedAccount = await updateDelayStatus(account.id);
+
   const updatedUser = await User.findByIdAndUpdate(
     user._id,
     {
@@ -59,15 +61,18 @@ export const getAccountStatus = async (req, res) => {
   )
     .select("-password")
     .exec();
+
   res.json(updatedUser);
 };
 
 export const getAccountBalance = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).exec();
+
     const balance = await stripe.balance.retrieve({
       stripeAccount: user.stripe_account_id,
     });
+
     res.json(balance);
   } catch (error) {
     console.log(error);
@@ -77,12 +82,14 @@ export const getAccountBalance = async (req, res) => {
 export const getPayoutSettings = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).exec();
+
     const loginLink = await stripe.accounts.createLoginLink(
       user.stripe_account_id,
       {
         redirect_url: process.env.STRIPE_SETTING_REDIRECT_URL,
       }
     );
+
     res.json(loginLink);
   } catch (error) {
     console.log(error);
@@ -124,6 +131,46 @@ export const getSessionId = async (req, res) => {
     res.send({
       sessionId: session.id,
     });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const stripeSuccess = async (req, res) => {
+  try {
+    const { hotelId } = req.body;
+
+    const user = await User.findById(req.user._id).exec();
+
+    if (!user.stripeSession) return;
+
+    const session = await stripe.checkout.sessions.retrieve(
+      user.stripeSession.id
+    );
+
+    if (!session.payment_status === "paid") {
+      const orderExist = await Order.findOne({
+        "session.id": session.id,
+      }).exec();
+
+      if (orderExist) {
+        res.json({ success: true });
+      } else {
+        let newOrder = await new Order({
+          hotel: hotelId,
+          session,
+          orderedBy: user._id,
+        }).save();
+
+        await User.findByIdAndUpdate(user._id, {
+          $set: {
+            stripeSession: {},
+          },
+        });
+
+        res.json({ success: true });
+      }
+    }
   } catch (error) {
     console.log(error);
   }

@@ -1,6 +1,7 @@
 import fs from "fs";
 
 import Hotel from "../models/hotel";
+import Order from "../models/order";
 
 export const createHotel = async (req, res) => {
   try {
@@ -93,4 +94,30 @@ export const removeHotel = async (req, res) => {
     .select("-image.data")
     .exec();
   res.json(removedRes);
+};
+
+export const getUserHotelBookings = async (req, res) => {
+  const all = await Order.find({ orderedBy: req.user._id })
+    .select("session")
+    .populate("hotel", "-image.data")
+    .populate("orderedBy", "_id name")
+    .exec();
+
+  res.json(all);
+};
+
+export const isAlreadyBooked = async (req, res) => {
+  const { hotelId } = req.params;
+  const userOrders = await Order.find({ orderedBy: req.user._id })
+    .select("hotel")
+    .exec();
+  let ids = [];
+
+  for (let i = 0; i < userOrders.length; i++) {
+    ids.push(userOrders[i].hotel.toString());
+  }
+
+  res.json({
+    ok: ids.includes(hotelId),
+  });
 };
