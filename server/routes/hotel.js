@@ -13,6 +13,7 @@ import {
   removeHotel,
   getUserHotelBookings,
   isAlreadyBooked,
+  searchListings,
 } from "../controllers/hotel";
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.get("/seller-hotels", requireSignin, getSellerHotels);
 router.get("/user-hotel-bookings", requireSignin, getUserHotelBookings);
 router.get("/is-already-booked/:hotelId", requireSignin, isAlreadyBooked);
 router.post("/create-hotel", requireSignin, formidable(), createHotel);
+router.post("/search-listings", searchListings);
 router.put(
   "/update-hotel/:hotelId",
   requireSignin,

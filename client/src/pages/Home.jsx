@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getAllHotels } from "../store/actions/hotel";
 
 import SmallCard from "../components/SmallCard/SmallCard";
+import SearchForm from "../components/SearchForm/SearchForm";
 
 const Home = () => {
   const [hotels, setHotels] = useState([]);
@@ -20,12 +21,16 @@ const Home = () => {
     <>
       <div className="container-fluid bg-secondary p-5 text-center">
         <h1>All hotels</h1>
-        <div className="container-fluid">
-          <br />
-          {hotels.map((hotel) => {
-            return <SmallCard key={hotel._id} hotel={hotel} owner={true} />;
-          })}
-        </div>
+      </div>
+      <div className="col">
+        <br />
+        <SearchForm />
+      </div>
+      <div className="container-fluid">
+        <br />
+        {hotels.map((hotel) => {
+          return <SmallCard key={hotel._id} hotel={hotel} owner={true} />;
+        })}
       </div>
     </>
   );

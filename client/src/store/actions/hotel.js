@@ -66,6 +66,13 @@ export const isAlreadyBooked = async (token, hotelId) => {
   );
 };
 
+export const searchListings = async (query) => {
+  return await axios.post(
+    `${process.env.REACT_APP_API}/search-listings/`,
+    query
+  );
+};
+
 export const getDataDifference = (from, to) => {
   const day = 24 * 60 * 60 * 1000;
   const startDate = new Date(from);

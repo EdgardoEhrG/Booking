@@ -11,6 +11,7 @@ import Hotels from "./pages/Hotels/Hotels";
 import NewHotel from "./pages/Hotels/NewHotel";
 import EditHotel from "./pages/Hotels/EditHotel";
 import ViewHotel from "./pages/Hotels/ViewHotel";
+import SearchResult from "./pages/Hotels/SearchResult";
 
 import StripeCallback from "./components/stripe/stripe-callback";
 import StripeSuccess from "./components/stripe/stripe-success";
@@ -52,6 +53,7 @@ const App = () => {
         />
         <PrivateRoute exact path="/stripe/cancel" component={StripeCancel} />
         <Route exact path="/hotel/:hotelId" component={ViewHotel} />
+        <Route exact path="/search-result" component={SearchResult} />
       </Switch>
     </Router>
   );
