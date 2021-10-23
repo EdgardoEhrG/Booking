@@ -2,6 +2,8 @@
 
 > React
 
+> Redux
+
 > NodeJS
 
 > ExpressJS
