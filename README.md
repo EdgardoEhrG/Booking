@@ -4,9 +4,9 @@
 
 > Redux
 
-> NodeJS
+> Node.js
 
-> ExpressJS
+> Express
 
 > MongoDB
 
