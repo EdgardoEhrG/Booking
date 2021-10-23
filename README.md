@@ -8,4 +8,8 @@
 
 > MongoDB
 
-> Stripe
+## Useful elements
+
+- [ ] Protected router
+- [ ] Stripe logic
+- [ ] Auth
